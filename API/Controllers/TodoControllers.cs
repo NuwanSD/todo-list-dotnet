@@ -38,5 +38,39 @@ namespace API.Controllers
 
             return BadRequest("Problem creating new todo");
         }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateTodo(UpdateTodoDto updateTodoDto)
+        {
+            var todo = await context.TodoItems.FindAsync(updateTodoDto.Id);
+
+            if (todo == null) return NotFound();
+
+            mapper.Map(updateTodoDto, todo);
+
+            var result = await context.SaveChangesAsync() > 0;
+
+            if (result) return NoContent();
+
+            return BadRequest("Problem updating todo");
+        }
+
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteTodo(int id)
+        {
+            var todo = await context.TodoItems.FindAsync(id);
+
+            if (todo == null) return NotFound();
+
+            context.TodoItems.Remove(todo);
+
+            var result = await context.SaveChangesAsync() > 0;
+
+            if (result) return Ok();
+
+            return BadRequest("Problem deleting the todo");
+        }
+
     }
 }
